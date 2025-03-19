@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<a href="/">home</a>
+
+<head>
+    <title>Message board</title>
+</head>
+
+
+<body>
+    <table>
+        <tr>
+            <th style="text-align:left">Username:
+            <td>{{user}}
+    </table>
+
+
+    <form action='/logout/' method="POST">
+        <!-- {% csrf_token %} -->
+        <input type="submit" value="Logout" />
+    </form>
+
+    <h2>Post a message</h2>
+
+    <form action='/add/' method="POST" enctype="multipart/form-data">
+        <!-- {% csrf_token %} -->
+        <textarea name="content" cols="40" rows="5"></textarea><br />
+        <input type="submit" value="Send" />
+    </form>
+
+    {{ messages }}
+
+    <h1>Message board</h1>
+
+    {% for msg in messages %}
+
+    </br>
+    {{msg.content|safe}}
+    </br>
+    <i>- {{msg.poster.username}}</i>
+    </br>
+
+    {% endfor %}
+
+
+
+</body>
+
+
+</body>
+
+</html>

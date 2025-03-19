@@ -1,0 +1,21 @@
+<!-- home.html -->
+<h1>"Tietoturvallinen" viestisovellus</h1>
+<table>
+    <tr>
+        <th style="text-align:left">Username:
+        <td>{{user}}
+</table>
+
+
+{{account_link}}
+<form action='/logout/' method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Logout" />
+</form>
+<ul>
+    <li><a href="/login">Login/Register</a></li>
+    <li><a href="/messages">Messageboard</a></li>
+    {% if user %}
+    <li><a href={{account_link}}>Account info</a></li>
+    {% endif %}
+</ul>

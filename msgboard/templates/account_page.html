@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<a href="/">home</a>
+
+<head>
+    <title>Account</title>
+</head>
+
+
+<body>
+    <table>
+        <tr>
+            <th style="text-align:left">Username:
+            <td>{{user}}
+    </table>
+
+
+    <form action='/logout/' method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Logout" />
+    </form>
+
+
+    <h2>Your messages</h2>
+
+
+    <ul>
+        {% for msg in messages %}
+        <li>{{msg.content|safe}}</li>
+        <form action="/delete/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="msg_id" value="{{ msg.id }}">
+            <input type="submit" value="Delete">
+        </form>
+        {% endfor %}
+    </ul>
+
+
+
+
+
+
+</body>
+
+
+</body>
+
+</html>
