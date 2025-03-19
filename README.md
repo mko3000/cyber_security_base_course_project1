@@ -9,7 +9,7 @@ The app can be used to post messages on a message wall with the poster's name vi
 
 ##Installation:
 1. Navigate to the directory you wish to save the program in the command line.
-1. run "git clone ...."
+1. run "git clone https://github.com/mko3000/cyber_security_base_course_project1.git"
 1. run "python3 manage.py migrate"
 1. run "python3 manage.py runserver"
 
