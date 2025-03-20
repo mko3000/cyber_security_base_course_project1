@@ -1,20 +1,20 @@
-#Web app with five vulnerabilities
+# Web app with vulnerabilities
 Project I for the Cyber Security Base 2025 course
 
-##Assignment
-A django web app that must inlcude five vulnerabilities from the OWASP top ten list https://owasp.org/www-project-top-ten/
+## Assignment
+A Django web app that must inlcude five vulnerabilities from the OWASP top ten list https://owasp.org/www-project-top-ten/.
 
-##Description
+## Description
 The app can be used to post messages on a message wall with the poster's name visible under the message. The app has a login/register function. The user can open an account page where they can see the messages they have posted and delete messages.
 
-##Installation:
+## Installation
 1. Navigate to the directory you wish to save the program in the command line.
-1. run "git clone https://github.com/mko3000/cyber_security_base_course_project1.git"
-1. run "python3 manage.py migrate"
-1. run "python3 manage.py runserver"
+1. run ```git clone https://github.com/mko3000/cyber_security_base_course_project1.git```
+1. run ```python3 manage.py migrate```
+1. run ```python3 manage.py runserver```
 
 
-##Vulnerability report
+## Vulnerability report
 
 ### Flaw 1: Insecure design (A04:2021)
 There are multiple insecure design choices:
@@ -30,9 +30,10 @@ https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c3874
 https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L48
 
     ***Fix***\
-Instead of creating own solution for user authentication, use Django's default solutions which are more secure.
-https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L3
-https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L6
+Instead of creating own solution for user authentication, use Django's default solutions which are more secure. These include the User model and the login, logout and authenticate methods.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L46-L48
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L62
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L69
 
 1. csft tokens are not used. In fact, all the views that handle post request have a @csrf_exempt decorator added.
 https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L59
@@ -51,22 +52,39 @@ https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c3874
 ### Flaw 2: Identification and Authentication Failures (A07:2021)
 
 The app has at least these identification and authentication failures:
-1. Exposes session identifier in the URL. The user account pages can be accessed by using the username in the URL like this: /account/?user=alice.
+1. Exposes session identifier in the URL. The user account pages can be accessed by using the username in the URL like this ```/account/?user=alice``` and searching the BadUser table by filtering with the username to get the user object.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L78-L79
+
     ***Fix***\
-plaa
+Instead of getting the ueser from the url we could get the user from the request. This is much easier to implement and safer.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/fixed/fixed_views.py#L84
 
 1. Password length or complexity are not enforced.
     ***Fix***\
-We can use Django's default password validators UserAttributeSimilarityValidator, MinimumLengthValidator, CommonPasswordValidator, and NumericPasswordValidator. They check if the password is too similiar to the username, if the password is long enough (default minimum length = 8), if the password is found in a common passwords list and if the password is completely numeric.
+We can use Django's default password validators UserAttributeSimilarityValidator, MinimumLengthValidator, CommonPasswordValidator, and NumericPasswordValidator. They check if the password is too similiar to the username, if the password is long enough (default minimum length = 8), if the password is found in a common passwords list and if the password is completely numeric. A validate_passwords method implementing these checks was added to views. https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/fixed/fixed_views.py#L16
 
 1. Permits brute force or other automated attacks.
 
 
 ### Flaw 3: Cryptographic failures (A02:2021)
-The user data, including passwords, is stored in the database in plain text. Also the session token is not used but a plain test user identfier cookie is used instead.
+The user data, including passwords, is stored in the database in plain text. If an attacker got access to the app's database they could easily read the passwords in the user table.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L48
+https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/models.py#L13-L15
+
+In addition, the app doesn't use an encrypted sessionid to keep track of the user's session. Instead a plain text user identfier cookie is used.  The method of how the user_id cookie is generated is easy to guess and an attacker could set their own cookie following the simple logic and pose as the user.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L50-L51
+
+***Fix***\
+Use Django's in-built User model which has the passwords encrypted. Instead of using a plain text user_id as a session token, use the sessionid available in the request object.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/fixed/fixed_models.py#L2
 
 ### Flaw 4: Broken access control (A01:2021)
 An attacker can access any user's messages by entering the user's username in the account page's url as a parameter. In the account page, the correct user access is not confirmed and the attacker can delete the user's messages which should be possible only for the user themself.
+https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/views.py#L84-L87
+
+***Fix***\
+A more secure way is attaining the user form the request. This method uses the ecrypted sessionid token and ensures that only the messages from the user are displayed in the account page. An additional check can be made when deleting a message.
+
 
 ### Flaw 5: Insufficient logging and monitoring (A09:2021)
 No logging feature has been implemented. An attacker could use brute force attacks to try passwords and it would remaing unnoticed. Also, a user could post inpropriate messagas on the message board and it would be difficult to block for example their ip address, because that data is not collected. In addition, there is no moderation.
