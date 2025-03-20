@@ -56,14 +56,13 @@ The app has at least these identification and authentication failures:
 https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L78-L79
 
     ***Fix***\
-Instead of getting the ueser from the url we could get the user from the request. This is much easier to implement and safer.
+Instead of getting the user from the url we could get the user from the request. This is much easier to implement and safer.
 https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/fixed/fixed_views.py#L84
 
-1. Password length or complexity are not enforced.
+1. Password length or complexity are not enforced. It's easier for the attacker to test for example common passwords and passwords reminding the username. Even a random password is possible to crack by cyling trough possible strings if it's short.
+
     ***Fix***\
 We can use Django's default password validators UserAttributeSimilarityValidator, MinimumLengthValidator, CommonPasswordValidator, and NumericPasswordValidator. They check if the password is too similiar to the username, if the password is long enough (default minimum length = 8), if the password is found in a common passwords list and if the password is completely numeric. A validate_passwords method implementing these checks was added to views. https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c740ecee195ddff985a584e80f412/msgboard/fixed/fixed_views.py#L16
-
-1. Permits brute force or other automated attacks.
 
 
 ### Flaw 3: Cryptographic failures (A02:2021)
@@ -84,10 +83,14 @@ https://github.com/mko3000/cyber_security_base_course_project1/blob/352fff04190c
 
 ***Fix***\
 A more secure way is attaining the user form the request. This method uses the ecrypted sessionid token and ensures that only the messages from the user are displayed in the account page. An additional check can be made when deleting a message.
-
+https://github.com/mko3000/cyber_security_base_course_project1/blob/e18d66fc18fd698b3179c7122c03fb8fe9b6ff79/msgboard/fixed/fixed_views.py#L94-L95
 
 ### Flaw 5: Insufficient logging and monitoring (A09:2021)
 No logging feature has been implemented. An attacker could use brute force attacks to try passwords and it would remaing unnoticed. Also, a user could post inpropriate messagas on the message board and it would be difficult to block for example their ip address, because that data is not collected. In addition, there is no moderation.
+
+***Fix***\
+Logging could be added for example when user logs in and out and when a login fails. Django provides tools for this. I implemented a method for logging failed login attempts which logs the ip address where the attempt came from.
+
 
 
 

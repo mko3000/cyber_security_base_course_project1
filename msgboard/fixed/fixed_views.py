@@ -11,7 +11,20 @@ from django.core.exceptions import (
     ImproperlyConfigured,
     ValidationError,
 )
-from .fixed_models import Message, BadMessage, BadUser
+import logging
+from django.contrib.auth.signals import user_login_failed
+from .fixed_models import Message
+
+log = logging.getLogger(__name__)
+
+def get_client_ip(request):
+    """Extract client IP address from request."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 def validate_password(password, user=None):    
     errors = []
@@ -50,11 +63,14 @@ def login_register(request):
             else:
                 if not User.objects.filter(username=username).exists():
                     error = "Wrong credentials. Try other credentials or register a new user"
-                    login(request, user)
+                    log.warning(f"Login failed for non-existent user: {username} from IP: {get_client_ip(request)}")
+                    user_login_failed.send(sender=get_client_ip(request), credentials={"username": username}, request=request)
                     return render(request, 'login.html', {'error': error})
                 else:
                     # User exists but password is incorrect
                     error = "Wrong credentials. Try other credentials or register a new user"
+                    log.warning(f"Login failed for user: {username} from IP: {get_client_ip(request)}")
+                    user_login_failed.send(sender=get_client_ip(request), credentials={"username": username}, request=request)
                     return render(request, 'login.html', {'error': error})
         if action == 'register':
             if not User.objects.filter(username=username).exists():
