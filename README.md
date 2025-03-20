@@ -90,8 +90,9 @@ No logging feature has been implemented. An attacker could use brute force attac
 
 ***Fix***\
 Logging could be added for example when user logs in and out and when a login fails. Django provides tools for this. I implemented a method for logging failed login attempts which logs the ip address where the attempt came from.
-
-
+https://github.com/mko3000/cyber_security_base_course_project1/blob/38b00609b0d79cb9e37f2b7fbc19b366f3a3d194/msgboard/fixed/fixed_views.py#L14-L27
+https://github.com/mko3000/cyber_security_base_course_project1/blob/38b00609b0d79cb9e37f2b7fbc19b366f3a3d194/msgboard/fixed/fixed_views.py#L66-L67
+https://github.com/mko3000/cyber_security_base_course_project1/blob/38b00609b0d79cb9e37f2b7fbc19b366f3a3d194/msgboard/fixed/fixed_views.py#L72-L73
 
 
 
