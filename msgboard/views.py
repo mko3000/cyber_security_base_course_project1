@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .models import Message, BadMessage, BadUser
+from .models import BadMessage, BadUser
 
 def getUser(request):
     user_id = request.COOKIES.get("user_id")
@@ -78,7 +78,7 @@ def account_view(request):
     username = request.GET.get('user')
     user = BadUser.objects.filter(username=username).first()
     messages = BadMessage.objects.filter(poster = user)       
-    return render(request, 'account_page.html', {'messages': messages})
+    return render(request, 'account_page.html', {'messages': messages, 'username': username})
 
 @csrf_exempt
 def delete(request):
