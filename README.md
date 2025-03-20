@@ -31,9 +31,9 @@ https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c3874
 
     ***Fix***\
 Instead of creating own solution for user authentication, use Django's default solutions which are more secure. These include the User model and the login, logout and authenticate methods.
-https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L46-L48
-https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L62
-https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/fixed/fixed_views.py#L69
+https://github.com/mko3000/cyber_security_base_course_project1/blob/e18d66fc18fd698b3179c7122c03fb8fe9b6ff79/msgboard/fixed/fixed_views.py#L46-L48
+https://github.com/mko3000/cyber_security_base_course_project1/blob/e18d66fc18fd698b3179c7122c03fb8fe9b6ff79/msgboard/fixed/fixed_views.py#L62
+https://github.com/mko3000/cyber_security_base_course_project1/blob/e18d66fc18fd698b3179c7122c03fb8fe9b6ff79/msgboard/fixed/fixed_views.py#L69
 
 1. csft tokens are not used. In fact, all the views that handle post request have a @csrf_exempt decorator added.
 https://github.com/mko3000/cyber_security_base_course_project1/blob/0dd72f4c38746e753ecf278141cfb9e6878e8c5f/msgboard/views.py#L59
