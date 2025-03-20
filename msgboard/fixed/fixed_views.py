@@ -5,7 +5,32 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.conf import settings
+from django.utils.module_loading import import_string
+from django.core.exceptions import (
+    ImproperlyConfigured,
+    ValidationError,
+)
 from .fixed_models import Message, BadMessage, BadUser
+
+def validate_password(password, user=None):    
+    errors = []
+    for validator in settings.AUTH_PASSWORD_VALIDATORS:
+        try:
+            klass = import_string(validator["NAME"])
+        except ImportError:
+            msg = (
+                "The module in NAME could not be imported: %s. Check your "
+                "AUTH_PASSWORD_VALIDATORS setting."
+            )
+            raise ImproperlyConfigured(msg % validator["NAME"])
+        curValidator = klass(**validator.get("OPTIONS", {}))
+        try:
+            curValidator.validate(password, user)
+        except ValidationError as error:
+            errors.append(error)
+    if errors:
+        raise ValidationError(errors)
 
 def home(request):
     account_link = '/account/'
@@ -33,6 +58,7 @@ def login_register(request):
                     return render(request, 'login.html', {'error': error})
         if action == 'register':
             if not User.objects.filter(username=username).exists():
+                validate_password(password, username)
                 user = User.objects.create_user(username=username, password=password)
                 login(request, user)
                 return redirect('home')     
